@@ -1,0 +1,17 @@
+@startuml Health Check Sequence Diagram
+title Health Check Endpoint
+
+actor Client
+participant "HealthCheckController" as Controller
+participant "ResponseEntity" as Response
+
+Client -> Controller: GET /api/health
+activate Controller
+
+Controller -> Controller: Create response map with status, timestamp, service, message
+Controller -> Response: Create ResponseEntity.ok(response)
+Controller --> Client: Return 200 OK with health status
+
+deactivate Controller
+
+@enduml

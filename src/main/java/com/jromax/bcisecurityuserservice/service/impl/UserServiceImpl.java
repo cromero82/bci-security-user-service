@@ -13,9 +13,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -98,5 +100,44 @@ public class UserServiceImpl implements UserService {
                 .citycode(phone.getCitycode())
                 .contrycode(phone.getContrycode())
                 .build();
+    }
+    
+    @Override
+    @Transactional
+    public UserDTO loginUser(String token) {
+        try {
+            // Extract user ID from token
+            UUID userId = jwtUtil.extractUserId(token);
+            
+            // Find user by ID
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found"));
+            
+            // Validate token
+            if (!jwtUtil.validateToken(token, user.getEmail())) {
+                throw new IllegalArgumentException("Invalid or expired token");
+            }
+            
+            // Update last login time
+            user.setLastLogin(LocalDateTime.now());
+            
+            // Generate new token
+            String newToken = jwtUtil.generateToken(user.getEmail(), user.getId());
+            user.setToken(newToken);
+            
+            // Save updated user
+            User updatedUser = userRepository.save(user);
+            
+            // Map to DTO and return
+            UserDTO userDTO = mapToUserDTO(updatedUser);
+            // Include password in response as per requirements
+            // Note: In a real-world scenario, we would not return the hashed password
+            // but the requirements specifically ask for it
+            userDTO.setPassword(user.getPassword());
+            
+            return userDTO;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid token: " + e.getMessage());
+        }
     }
 }

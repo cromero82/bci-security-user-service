@@ -1,0 +1,81 @@
+@startuml Login Sequence Diagram
+title User Login Endpoint
+
+actor Client
+participant "UserController" as Controller
+participant "UserService" as Service
+participant "UserServiceImpl" as ServiceImpl
+participant "JwtUtil" as JwtUtil
+participant "UserRepository" as Repository
+database "H2 Database" as DB
+
+Client -> Controller: POST /api/login with Authorization header
+activate Controller
+
+Controller -> Controller: Extract token from Authorization header
+
+Controller -> Service: loginUser(token)
+activate Service
+
+Service -> ServiceImpl: loginUser(token)
+activate ServiceImpl
+
+ServiceImpl -> JwtUtil: extractUserId(token)
+activate JwtUtil
+JwtUtil --> ServiceImpl: userId
+deactivate JwtUtil
+
+ServiceImpl -> Repository: findById(userId)
+activate Repository
+Repository -> DB: SELECT user by ID
+DB --> Repository: User or empty
+Repository --> ServiceImpl: User or EntityNotFoundException
+deactivate Repository
+
+alt User not found
+    ServiceImpl --> Service: throw EntityNotFoundException
+    Service --> Controller: throw EntityNotFoundException
+    Controller --> Client: Return 404 Not Found with error message
+else User found
+    ServiceImpl -> JwtUtil: validateToken(token, user.email)
+    activate JwtUtil
+    JwtUtil --> ServiceImpl: boolean (valid or not)
+    deactivate JwtUtil
+    
+    alt Token invalid
+        ServiceImpl --> Service: throw IllegalArgumentException
+        Service --> Controller: throw IllegalArgumentException
+        Controller --> Client: Return 400 Bad Request with error message
+    else Token valid
+        ServiceImpl -> ServiceImpl: Update lastLogin to current time
+        
+        ServiceImpl -> JwtUtil: generateToken(email, userId)
+        activate JwtUtil
+        JwtUtil --> ServiceImpl: new JWT token
+        deactivate JwtUtil
+        
+        ServiceImpl -> ServiceImpl: Set new token to user
+        
+        ServiceImpl -> Repository: save(updated user)
+        activate Repository
+        Repository -> DB: UPDATE user
+        DB --> Repository: Updated user
+        Repository --> ServiceImpl: Updated user
+        deactivate Repository
+        
+        ServiceImpl -> ServiceImpl: Map user entity to DTO
+        ServiceImpl -> ServiceImpl: Set password to DTO
+        
+        ServiceImpl --> Service: Return UserDTO
+        deactivate ServiceImpl
+        
+        Service --> Controller: Return UserDTO
+        deactivate Service
+        
+        Controller --> Client: Return 200 OK with UserDTO
+    end
+end
+
+deactivate Controller
+
+@enduml

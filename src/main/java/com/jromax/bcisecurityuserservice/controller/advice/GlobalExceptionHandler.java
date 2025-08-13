@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +50,32 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
+                .body(ErrorResponseDTO.builder().error(Collections.singletonList(error)).build());
+    }
+    
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleEntityNotFoundException(EntityNotFoundException ex) {
+        ErrorDTO error = ErrorDTO.builder()
+                .timestamp(LocalDateTime.now())
+                .codigo(HttpStatus.NOT_FOUND.value())
+                .detail(ex.getMessage())
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponseDTO.builder().error(Collections.singletonList(error)).build());
+    }
+    
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponseDTO> handleIllegalArgumentException(IllegalArgumentException ex) {
+        ErrorDTO error = ErrorDTO.builder()
+                .timestamp(LocalDateTime.now())
+                .codigo(HttpStatus.BAD_REQUEST.value())
+                .detail(ex.getMessage())
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponseDTO.builder().error(Collections.singletonList(error)).build());
     }
 

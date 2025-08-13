@@ -42,3 +42,7 @@ out/
 
 # Gradle
 .gradle/
+# Ignore Gradle build output and temp files
+build/
+tmp/
+build/tmp/compileJava/previous-compilation-data.bin

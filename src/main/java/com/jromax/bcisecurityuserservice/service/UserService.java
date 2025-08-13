@@ -11,4 +11,12 @@ public interface UserService {
      * @return the registered user with token
      */
     UserDTO registerUser(UserDTO userDTO);
+    
+    /**
+     * Login a user using token
+     * 
+     * @param token the JWT token
+     * @return the user with refreshed token
+     */
+    UserDTO loginUser(String token);
 }
