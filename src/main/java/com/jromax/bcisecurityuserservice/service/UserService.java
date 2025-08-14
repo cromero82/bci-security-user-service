@@ -1,6 +1,7 @@
 package com.jromax.bcisecurityuserservice.service;
 
 import com.jromax.bcisecurityuserservice.model.dto.UserDTO;
+import java.util.List;
 
 public interface UserService {
     
@@ -19,4 +20,11 @@ public interface UserService {
      * @return the user with refreshed token
      */
     UserDTO loginUser(String token);
+    
+    /**
+     * Get all users including password values
+     * 
+     * @return list of all users with their passwords
+     */
+    List<UserDTO> getAllUsersWithPasswords();
 }
