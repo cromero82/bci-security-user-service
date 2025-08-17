@@ -1,0 +1,228 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > GlobalExceptionHandler</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.jromax.bcisecurityuserservice.controller.advice</a>
+</div>
+
+<h1>Coverage Summary for Class: GlobalExceptionHandler (com.jromax.bcisecurityuserservice.controller.advice)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GlobalExceptionHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (6/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (40/60)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.jromax.bcisecurityuserservice.controller.advice;
+&nbsp;
+&nbsp;import com.jromax.bcisecurityuserservice.model.dto.error.ErrorDTO;
+&nbsp;import com.jromax.bcisecurityuserservice.model.dto.error.ErrorResponseDTO;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.validation.FieldError;
+&nbsp;import org.springframework.web.bind.MethodArgumentNotValidException;
+&nbsp;import org.springframework.web.bind.annotation.ExceptionHandler;
+&nbsp;import org.springframework.web.bind.annotation.RestControllerAdvice;
+&nbsp;
+&nbsp;import javax.persistence.EntityExistsException;
+&nbsp;import javax.persistence.EntityNotFoundException;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.Collections;
+&nbsp;import java.util.List;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;@RestControllerAdvice
+<b class="fc">&nbsp;@Slf4j</b>
+<b class="fc">&nbsp;public class GlobalExceptionHandler {</b>
+&nbsp;
+&nbsp;    @ExceptionHandler(MethodArgumentNotValidException.class)
+&nbsp;    public ResponseEntity&lt;ErrorResponseDTO&gt; handleValidationExceptions(MethodArgumentNotValidException ex) {
+<b class="fc">&nbsp;        log.error(&quot;Validation error: {}&quot;, ex.getMessage());</b>
+&nbsp;        
+<b class="fc">&nbsp;        List&lt;ErrorDTO&gt; errors = ex.getBindingResult()</b>
+<b class="fc">&nbsp;                .getAllErrors()</b>
+<b class="fc">&nbsp;                .stream()</b>
+<b class="fc">&nbsp;                .map(error -&gt; {</b>
+<b class="pc">&nbsp;                    String fieldName = error instanceof FieldError ? ((FieldError) error).getField() : error.getObjectName();</b>
+<b class="fc">&nbsp;                    String errorMessage = error.getDefaultMessage();</b>
+<b class="fc">&nbsp;                    log.debug(&quot;Validation error on field &#39;{}&#39;: {}&quot;, fieldName, errorMessage);</b>
+<b class="fc">&nbsp;                    return ErrorDTO.builder()</b>
+<b class="fc">&nbsp;                            .timestamp(LocalDateTime.now())</b>
+<b class="fc">&nbsp;                            .codigo(HttpStatus.BAD_REQUEST.value())</b>
+<b class="fc">&nbsp;                            .detail(fieldName + &quot;: &quot; + errorMessage)</b>
+<b class="fc">&nbsp;                            .build();</b>
+&nbsp;                })
+<b class="fc">&nbsp;                .collect(Collectors.toList());</b>
+&nbsp;
+<b class="fc">&nbsp;        log.info(&quot;Returning {} validation errors with status {}&quot;, errors.size(), HttpStatus.BAD_REQUEST);</b>
+<b class="fc">&nbsp;        return ResponseEntity</b>
+<b class="fc">&nbsp;                .status(HttpStatus.BAD_REQUEST)</b>
+<b class="fc">&nbsp;                .body(ErrorResponseDTO.builder().error(errors).build());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @ExceptionHandler(EntityExistsException.class)
+&nbsp;    public ResponseEntity&lt;ErrorResponseDTO&gt; handleEntityExistsException(EntityExistsException ex) {
+<b class="fc">&nbsp;        log.error(&quot;Entity already exists: {}&quot;, ex.getMessage());</b>
+&nbsp;        
+<b class="fc">&nbsp;        ErrorDTO error = ErrorDTO.builder()</b>
+<b class="fc">&nbsp;                .timestamp(LocalDateTime.now())</b>
+<b class="fc">&nbsp;                .codigo(HttpStatus.CONFLICT.value())</b>
+<b class="fc">&nbsp;                .detail(ex.getMessage())</b>
+<b class="fc">&nbsp;                .build();</b>
+&nbsp;
+<b class="fc">&nbsp;        log.info(&quot;Returning conflict error with status {}&quot;, HttpStatus.CONFLICT);</b>
+<b class="fc">&nbsp;        return ResponseEntity</b>
+<b class="fc">&nbsp;                .status(HttpStatus.CONFLICT)</b>
+<b class="fc">&nbsp;                .body(ErrorResponseDTO.builder().error(Collections.singletonList(error)).build());</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @ExceptionHandler(EntityNotFoundException.class)
+&nbsp;    public ResponseEntity&lt;ErrorResponseDTO&gt; handleEntityNotFoundException(EntityNotFoundException ex) {
+<b class="nc">&nbsp;        log.error(&quot;Entity not found: {}&quot;, ex.getMessage());</b>
+&nbsp;        
+<b class="nc">&nbsp;        ErrorDTO error = ErrorDTO.builder()</b>
+<b class="nc">&nbsp;                .timestamp(LocalDateTime.now())</b>
+<b class="nc">&nbsp;                .codigo(HttpStatus.NOT_FOUND.value())</b>
+<b class="nc">&nbsp;                .detail(ex.getMessage())</b>
+<b class="nc">&nbsp;                .build();</b>
+&nbsp;
+<b class="nc">&nbsp;        log.info(&quot;Returning not found error with status {}&quot;, HttpStatus.NOT_FOUND);</b>
+<b class="nc">&nbsp;        return ResponseEntity</b>
+<b class="nc">&nbsp;                .status(HttpStatus.NOT_FOUND)</b>
+<b class="nc">&nbsp;                .body(ErrorResponseDTO.builder().error(Collections.singletonList(error)).build());</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @ExceptionHandler(IllegalArgumentException.class)
+&nbsp;    public ResponseEntity&lt;ErrorResponseDTO&gt; handleIllegalArgumentException(IllegalArgumentException ex) {
+<b class="fc">&nbsp;        log.error(&quot;Illegal argument: {}&quot;, ex.getMessage());</b>
+&nbsp;        
+<b class="fc">&nbsp;        ErrorDTO error = ErrorDTO.builder()</b>
+<b class="fc">&nbsp;                .timestamp(LocalDateTime.now())</b>
+<b class="fc">&nbsp;                .codigo(HttpStatus.BAD_REQUEST.value())</b>
+<b class="fc">&nbsp;                .detail(ex.getMessage())</b>
+<b class="fc">&nbsp;                .build();</b>
+&nbsp;
+<b class="fc">&nbsp;        log.info(&quot;Returning bad request error with status {}&quot;, HttpStatus.BAD_REQUEST);</b>
+<b class="fc">&nbsp;        return ResponseEntity</b>
+<b class="fc">&nbsp;                .status(HttpStatus.BAD_REQUEST)</b>
+<b class="fc">&nbsp;                .body(ErrorResponseDTO.builder().error(Collections.singletonList(error)).build());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @ExceptionHandler(Exception.class)
+&nbsp;    public ResponseEntity&lt;ErrorResponseDTO&gt; handleGenericException(Exception ex) {
+<b class="nc">&nbsp;        log.error(&quot;Unexpected error occurred: {}&quot;, ex.getMessage(), ex);</b>
+&nbsp;        
+<b class="nc">&nbsp;        ErrorDTO error = ErrorDTO.builder()</b>
+<b class="nc">&nbsp;                .timestamp(LocalDateTime.now())</b>
+<b class="nc">&nbsp;                .codigo(HttpStatus.INTERNAL_SERVER_ERROR.value())</b>
+<b class="nc">&nbsp;                .detail(&quot;An unexpected error occurred: &quot; + ex.getMessage())</b>
+<b class="nc">&nbsp;                .build();</b>
+&nbsp;
+<b class="nc">&nbsp;        log.info(&quot;Returning internal server error with status {}&quot;, HttpStatus.INTERNAL_SERVER_ERROR);</b>
+<b class="nc">&nbsp;        return ResponseEntity</b>
+<b class="nc">&nbsp;                .status(HttpStatus.INTERNAL_SERVER_ERROR)</b>
+<b class="nc">&nbsp;                .body(ErrorResponseDTO.builder().error(Collections.singletonList(error)).build());</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-08-17 17:10</div>
+</div>
+</body>
+</html>

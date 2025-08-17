@@ -54,7 +54,11 @@ public class UserController {
             throw e;
         }
     }
-    
+
+    /**
+     * Additional endpoint to make sure everything is going well
+     * @return
+     */
     @GetMapping("/users/all-with-passwords")
     public ResponseEntity<List<UserDTO>> getAllUsersWithPasswords() {
         log.info("Received request to get all users with passwords");

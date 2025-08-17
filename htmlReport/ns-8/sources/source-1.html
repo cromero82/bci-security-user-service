@@ -1,0 +1,340 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UserServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.jromax.bcisecurityuserservice.service.impl</a>
+</div>
+
+<h1>Coverage Summary for Class: UserServiceImpl (com.jromax.bcisecurityuserservice.service.impl)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    90%
+  </span>
+  <span class="absValue">
+    (9/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (6/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    91.5%
+  </span>
+  <span class="absValue">
+    (86/94)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">UserServiceImpl$$EnhancerBySpringCGLIB$$b31f7b86</td>
+  </tr>
+  <tr>
+    <td class="name">UserServiceImpl$$EnhancerBySpringCGLIB$$b31f7b86$$FastClassBySpringCGLIB$$89627f8b</td>
+  </tr>
+  <tr>
+    <td class="name">UserServiceImpl$$FastClassBySpringCGLIB$$825262bd</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    90%
+  </span>
+  <span class="absValue">
+    (9/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (6/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    91.5%
+  </span>
+  <span class="absValue">
+    (86/94)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.jromax.bcisecurityuserservice.service.impl;
+&nbsp;
+&nbsp;import com.jromax.bcisecurityuserservice.model.dto.PhoneUserDTO;
+&nbsp;import com.jromax.bcisecurityuserservice.model.dto.UserDTO;
+&nbsp;import com.jromax.bcisecurityuserservice.model.entity.PhoneUser;
+&nbsp;import com.jromax.bcisecurityuserservice.model.entity.User;
+&nbsp;import com.jromax.bcisecurityuserservice.repository.UserRepository;
+&nbsp;import com.jromax.bcisecurityuserservice.service.UserService;
+&nbsp;import com.jromax.bcisecurityuserservice.util.JwtUtil;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.security.crypto.password.PasswordEncoder;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import javax.persistence.EntityExistsException;
+&nbsp;import javax.persistence.EntityNotFoundException;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.UUID;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;@RequiredArgsConstructor</b>
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;public class UserServiceImpl implements UserService {
+&nbsp;
+&nbsp;    private final UserRepository userRepository;
+&nbsp;    private final JwtUtil jwtUtil;
+&nbsp;    private final PasswordEncoder passwordEncoder;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    @Transactional
+&nbsp;    public UserDTO registerUser(UserDTO userDTO) {
+<b class="fc">&nbsp;        log.info(&quot;Starting user registration process for email: {}&quot;, userDTO.getEmail());</b>
+&nbsp;        try {
+&nbsp;            // Check if user already exists
+<b class="fc">&nbsp;            if (userRepository.existsByEmail(userDTO.getEmail())) {</b>
+<b class="fc">&nbsp;                log.warn(&quot;Registration failed: Email already registered: {}&quot;, userDTO.getEmail());</b>
+<b class="fc">&nbsp;                throw new EntityExistsException(&quot;Email already registered&quot;);</b>
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;            log.debug(&quot;Creating user entity for email: {}&quot;, userDTO.getEmail());</b>
+&nbsp;            // Create user entity
+<b class="fc">&nbsp;            User user = User.builder()</b>
+<b class="fc">&nbsp;                    .name(userDTO.getName())</b>
+<b class="fc">&nbsp;                    .email(userDTO.getEmail())</b>
+<b class="fc">&nbsp;                    .password(passwordEncoder.encode(userDTO.getPassword()))</b>
+<b class="fc">&nbsp;                    .isActive(true)</b>
+<b class="fc">&nbsp;                    .created(LocalDateTime.now())</b>
+<b class="fc">&nbsp;                    .lastLogin(LocalDateTime.now())</b>
+<b class="fc">&nbsp;                    .phones(new ArrayList&lt;&gt;())</b>
+<b class="fc">&nbsp;                    .build();</b>
+&nbsp;
+&nbsp;            // Add phones if provided
+<b class="pc">&nbsp;            if (userDTO.getPhones() != null &amp;&amp; !userDTO.getPhones().isEmpty()) {</b>
+<b class="fc">&nbsp;                log.debug(&quot;Adding {} phone(s) to user&quot;, userDTO.getPhones().size());</b>
+<b class="fc">&nbsp;                List&lt;PhoneUser&gt; phones = userDTO.getPhones().stream()</b>
+<b class="fc">&nbsp;                        .map(this::mapToPhoneEntity)</b>
+<b class="fc">&nbsp;                        .collect(Collectors.toList());</b>
+&nbsp;                
+<b class="fc">&nbsp;                phones.forEach(user::addPhone);</b>
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;            log.debug(&quot;Saving user to database&quot;);</b>
+&nbsp;            // Save user
+<b class="fc">&nbsp;            User savedUser = userRepository.save(user);</b>
+&nbsp;
+<b class="fc">&nbsp;            log.debug(&quot;Generating JWT token for user&quot;);</b>
+&nbsp;            // Generate JWT token
+<b class="fc">&nbsp;            String token = jwtUtil.generateToken(savedUser.getEmail(), savedUser.getId());</b>
+<b class="fc">&nbsp;            savedUser.setToken(token);</b>
+<b class="fc">&nbsp;            userRepository.save(savedUser);</b>
+&nbsp;
+<b class="fc">&nbsp;            log.info(&quot;User registration completed successfully for ID: {}&quot;, savedUser.getId());</b>
+&nbsp;            // Map to DTO and return
+<b class="fc">&nbsp;            return mapToUserDTO(savedUser);</b>
+&nbsp;        } catch (EntityExistsException e) {
+&nbsp;            // This is already logged above
+&nbsp;            throw e;
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            log.error(&quot;Unexpected error during user registration: {}&quot;, e.getMessage());</b>
+&nbsp;            throw e;
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private PhoneUser mapToPhoneEntity(PhoneUserDTO phoneUserDTO) {
+<b class="fc">&nbsp;        return PhoneUser.builder()</b>
+<b class="fc">&nbsp;                .number(phoneUserDTO.getNumber())</b>
+<b class="fc">&nbsp;                .citycode(phoneUserDTO.getCitycode())</b>
+<b class="fc">&nbsp;                .contrycode(phoneUserDTO.getContrycode())</b>
+<b class="fc">&nbsp;                .build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private UserDTO mapToUserDTO(User user) {
+<b class="fc">&nbsp;        List&lt;PhoneUserDTO&gt; phoneDTOs = user.getPhones().stream()</b>
+<b class="fc">&nbsp;                .map(this::mapToPhoneDTO)</b>
+<b class="fc">&nbsp;                .collect(Collectors.toList());</b>
+&nbsp;
+<b class="fc">&nbsp;        return UserDTO.builder()</b>
+<b class="fc">&nbsp;                .id(user.getId())</b>
+<b class="fc">&nbsp;                .name(user.getName())</b>
+<b class="fc">&nbsp;                .email(user.getEmail())</b>
+<b class="fc">&nbsp;                .created(user.getCreated())</b>
+<b class="fc">&nbsp;                .lastLogin(user.getLastLogin())</b>
+<b class="fc">&nbsp;                .token(user.getToken())</b>
+<b class="fc">&nbsp;                .isActive(user.getIsActive())</b>
+<b class="fc">&nbsp;                .phones(phoneDTOs)</b>
+<b class="fc">&nbsp;                .build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private PhoneUserDTO mapToPhoneDTO(PhoneUser phone) {
+<b class="fc">&nbsp;        return PhoneUserDTO.builder()</b>
+<b class="fc">&nbsp;                .id(phone.getId())</b>
+<b class="fc">&nbsp;                .number(phone.getNumber())</b>
+<b class="fc">&nbsp;                .citycode(phone.getCitycode())</b>
+<b class="fc">&nbsp;                .contrycode(phone.getContrycode())</b>
+<b class="fc">&nbsp;                .build();</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    @Transactional
+&nbsp;    public UserDTO loginUser(String token) {
+<b class="fc">&nbsp;        log.info(&quot;Processing login request with token&quot;);</b>
+&nbsp;        try {
+&nbsp;            // Extract user ID from token
+<b class="fc">&nbsp;            log.debug(&quot;Extracting user ID from token&quot;);</b>
+<b class="fc">&nbsp;            UUID userId = jwtUtil.extractUserId(token);</b>
+&nbsp;            
+&nbsp;            // Find user by ID
+<b class="fc">&nbsp;            log.debug(&quot;Finding user by ID: {}&quot;, userId);</b>
+<b class="fc">&nbsp;            User user = userRepository.findById(userId)</b>
+<b class="fc">&nbsp;                    .orElseThrow(() -&gt; {</b>
+<b class="nc">&nbsp;                        log.warn(&quot;User not found with ID: {}&quot;, userId);</b>
+<b class="nc">&nbsp;                        return new EntityNotFoundException(&quot;User not found&quot;);</b>
+&nbsp;                    });
+&nbsp;            
+&nbsp;            // Validate token
+<b class="fc">&nbsp;            log.debug(&quot;Validating token for user: {}&quot;, user.getEmail());</b>
+<b class="pc">&nbsp;            if (!jwtUtil.validateToken(token, user.getEmail())) {</b>
+<b class="nc">&nbsp;                log.warn(&quot;Invalid or expired token for user: {}&quot;, user.getEmail());</b>
+<b class="nc">&nbsp;                throw new IllegalArgumentException(&quot;Invalid or expired token&quot;);</b>
+&nbsp;            }
+&nbsp;            
+&nbsp;            // Update last login time
+<b class="fc">&nbsp;            log.debug(&quot;Updating last login time for user: {}&quot;, user.getEmail());</b>
+<b class="fc">&nbsp;            user.setLastLogin(LocalDateTime.now());</b>
+&nbsp;            
+&nbsp;            // Generate new token
+<b class="fc">&nbsp;            log.debug(&quot;Generating new token for user: {}&quot;, user.getEmail());</b>
+<b class="fc">&nbsp;            String newToken = jwtUtil.generateToken(user.getEmail(), user.getId());</b>
+<b class="fc">&nbsp;            user.setToken(newToken);</b>
+&nbsp;            
+&nbsp;            // Save updated user
+<b class="fc">&nbsp;            log.debug(&quot;Saving updated user information&quot;);</b>
+<b class="fc">&nbsp;            User updatedUser = userRepository.save(user);</b>
+&nbsp;
+<b class="fc">&nbsp;            UserDTO userDTO = mapToUserDTO(updatedUser);</b>
+&nbsp;
+&nbsp;            // Include password in response as per requirements
+&nbsp;            // Note: In a real-world scenario, we would not return the hashed password
+<b class="fc">&nbsp;            userDTO.setPassword(user.getPassword());</b>
+&nbsp;            
+<b class="fc">&nbsp;            log.info(&quot;Login successful for user: {}&quot;, user.getEmail());</b>
+<b class="fc">&nbsp;            return userDTO;</b>
+&nbsp;        } catch (EntityNotFoundException | IllegalArgumentException e) {
+<b class="nc">&nbsp;            log.error(&quot;Login failed: {}&quot;, e.getMessage());</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Invalid token: &quot; + e.getMessage());</b>
+&nbsp;        } catch (Exception e) {
+<b class="fc">&nbsp;            log.error(&quot;Unexpected error during login: {}&quot;, e.getMessage());</b>
+<b class="fc">&nbsp;            throw new IllegalArgumentException(&quot;Invalid token: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public List&lt;UserDTO&gt; getAllUsersWithPasswords() {
+<b class="fc">&nbsp;        log.info(&quot;Retrieving all users with passwords&quot;);</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            List&lt;User&gt; users = userRepository.findAll();</b>
+<b class="fc">&nbsp;            log.debug(&quot;Found {} users in the database&quot;, users.size());</b>
+&nbsp;            
+<b class="fc">&nbsp;            List&lt;UserDTO&gt; userDTOs = users.stream()</b>
+<b class="fc">&nbsp;                    .map(user -&gt; {</b>
+<b class="fc">&nbsp;                        UserDTO dto = mapToUserDTO(user);</b>
+&nbsp;                        // Include password in each user DTO
+<b class="fc">&nbsp;                        dto.setPassword(user.getPassword());</b>
+<b class="fc">&nbsp;                        return dto;</b>
+&nbsp;                    })
+<b class="fc">&nbsp;                    .collect(Collectors.toList());</b>
+&nbsp;            
+<b class="fc">&nbsp;            log.info(&quot;Successfully retrieved all users with passwords&quot;);</b>
+<b class="fc">&nbsp;            return userDTOs;</b>
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            log.error(&quot;Error retrieving all users: {}&quot;, e.getMessage());</b>
+&nbsp;            throw e;
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-08-17 17:10</div>
+</div>
+</body>
+</html>
