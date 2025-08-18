@@ -56,10 +56,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    75%
+    77.8%
   </span>
   <span class="absValue">
-    (6/8)
+    (7/9)
   </span>
 </td>
 <td class="coverageStat">
@@ -67,15 +67,15 @@ Current scope:     <a href="../../index.html">all classes</a>
     50%
   </span>
   <span class="absValue">
-    (1/2)
+    (2/4)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    66.7%
+    69.7%
   </span>
   <span class="absValue">
-    (40/60)
+    (46/66)
   </span>
 </td>
 </tr>
@@ -113,13 +113,21 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    @ExceptionHandler(MethodArgumentNotValidException.class)
 &nbsp;    public ResponseEntity&lt;ErrorResponseDTO&gt; handleValidationExceptions(MethodArgumentNotValidException ex) {
 <b class="fc">&nbsp;        log.error(&quot;Validation error: {}&quot;, ex.getMessage());</b>
-&nbsp;        
+&nbsp;
+&nbsp;        // Collect unique (field, message) pairs to avoid duplicate entries when multiple constraints fail on the same field
 <b class="fc">&nbsp;        List&lt;ErrorDTO&gt; errors = ex.getBindingResult()</b>
 <b class="fc">&nbsp;                .getAllErrors()</b>
 <b class="fc">&nbsp;                .stream()</b>
 <b class="fc">&nbsp;                .map(error -&gt; {</b>
 <b class="pc">&nbsp;                    String fieldName = error instanceof FieldError ? ((FieldError) error).getField() : error.getObjectName();</b>
 <b class="fc">&nbsp;                    String errorMessage = error.getDefaultMessage();</b>
+<b class="fc">&nbsp;                    return fieldName + &quot;|&quot; + errorMessage;</b>
+&nbsp;                })
+<b class="fc">&nbsp;                .distinct()</b>
+<b class="fc">&nbsp;                .map(key -&gt; {</b>
+<b class="fc">&nbsp;                    String[] parts = key.split(&quot;\\|&quot;, 2);</b>
+<b class="fc">&nbsp;                    String fieldName = parts[0];</b>
+<b class="pc">&nbsp;                    String errorMessage = parts.length &gt; 1 ? parts[1] : &quot;Invalid value&quot;;</b>
 <b class="fc">&nbsp;                    log.debug(&quot;Validation error on field &#39;{}&#39;: {}&quot;, fieldName, errorMessage);</b>
 <b class="fc">&nbsp;                    return ErrorDTO.builder()</b>
 <b class="fc">&nbsp;                            .timestamp(LocalDateTime.now())</b>
@@ -222,7 +230,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-08-17 17:10</div>
+    <div style="float:right;">generated on 2025-08-17 18:27</div>
 </div>
 </body>
 </html>

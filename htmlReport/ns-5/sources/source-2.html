@@ -123,14 +123,13 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package com.jromax.bcisecurityuserservice.model.dto;
 &nbsp;
+&nbsp;import com.jromax.bcisecurityuserservice.validation.PropertyPattern;
 &nbsp;import lombok.AllArgsConstructor;
 &nbsp;import lombok.Builder;
 &nbsp;import lombok.Data;
 &nbsp;import lombok.NoArgsConstructor;
 &nbsp;
 &nbsp;import javax.validation.Valid;
-&nbsp;import javax.validation.constraints.Email;
-&nbsp;import javax.validation.constraints.Pattern;
 &nbsp;import java.time.LocalDateTime;
 &nbsp;import java.util.List;
 &nbsp;import java.util.UUID;
@@ -145,12 +144,13 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    
 <b class="fc">&nbsp;    private String name;</b>
 &nbsp;    
-&nbsp;    @Email(message = &quot;Email format is invalid&quot;)
-&nbsp;    @Pattern(regexp = &quot;^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$&quot;, message = &quot;Email format is invalid&quot;)
+&nbsp;    @PropertyPattern(property = &quot;app.validation.email-regex&quot;, message = &quot;&quot;, allowEmpty = false)
 <b class="fc">&nbsp;    private String email;</b>
 &nbsp;    
-&nbsp;    @Pattern(regexp = &quot;^(?=.*[A-Z])(?=.*[0-9].*[0-9])[a-z0-9A-Z]{8,12}$&quot;, 
-&nbsp;             message = &quot;Password must have exactly one uppercase letter, exactly two digits, lowercase letters, and be 8-12 characters long&quot;)
+&nbsp;    @PropertyPattern(
+&nbsp;            property = &quot;app.validation.password-regex&quot;,
+&nbsp;            message = &quot;&quot;,
+&nbsp;            allowEmpty = false)
 <b class="fc">&nbsp;    private String password;</b>
 &nbsp;    
 &nbsp;    @Valid
@@ -187,7 +187,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-08-17 17:10</div>
+    <div style="float:right;">generated on 2025-08-17 18:27</div>
 </div>
 </body>
 </html>

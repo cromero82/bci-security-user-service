@@ -1,0 +1,238 @@
+{
+	"info": {
+		"_postman_id": "dfda9bbe-95d2-4a22-9ab6-3d1ddb32a396",
+		"name": "bci-security-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2730125",
+		"_collection_link": "https://crimson-astronaut-4286.postman.co/workspace/POS-AI-Infinito~134d032e-536f-4c38-95f8-32cd5d5e5fd7/collection/2730125-dfda9bbe-95d2-4a22-9ab6-3d1ddb32a396?action=share&source=collection_link&creator=2730125"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}:{{port}}/api/health",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sign Up - Valid User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Postman Test Script: Extract \"token\" from response and set it as environment variable \"token\"",
+							"",
+							"pm.test(\"Extract and set token\", function () {",
+							"    var response = pm.response.json();",
+							"    if (response.token) {",
+							"        pm.environment.set(\"token\", response.token);",
+							"        console.log(\"Token set in environment variable: \" + response.token);",
+							"    } else {",
+							"        console.error(\"Token not found in response!\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Carlos ROMERO\",\n  \"email\": \"carlos.romero@example.com\",\n  \"password\": \"Test1abc2\",\n  \"phones\": [\n    {\n      \"number\": 123456789,\n      \"citycode\": 1,\n      \"contrycode\": \"+1\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{host}}:{{port}}/api/sign-up",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"sign-up"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sign Up - Invalid Email",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"invalid-email\",\n  \"password\": \"Test1234\",\n  \"phones\": [\n    {\n      \"number\": 123456789,\n      \"citycode\": 1,\n      \"contrycode\": \"+1\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{host}}:{{port}}/api/sign-up",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"sign-up"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sign Up - Invalid Password (lower)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test.user@example.com\",\n  \"password\": \"Test1a2\",\n  \"phones\": [\n    {\n      \"number\": 123456789,\n      \"citycode\": 1,\n      \"contrycode\": \"+1\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{host}}:{{port}}/api/sign-up",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"sign-up"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sign Up - Duplicate Email (Run two times with same email)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Max payne\",\n  \"email\": \"max.payne@example.com\",\n  \"password\": \"Test1abc2\",\n  \"phones\": [\n    {\n      \"number\": 123456789,\n      \"citycode\": 1,\n      \"contrycode\": \"+1\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{host}}:{{port}}/api/sign-up",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"sign-up"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login - Valid Token",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-length": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{host}}:{{port}}/api/login",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login - Invalid Token",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer invalid-token"
+					}
+				],
+				"url": {
+					"raw": "{{host}}:{{port}}/api/login",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all Users (extra endpoint for internal test)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}:{{port}}/api/users/all-with-passwords",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"users",
+						"all-with-passwords"
+					]
+				},
+				"description": "Generated from cURL: curl --request GET \\\n  --url http://localhost:8080/api/users/all-with-passwords"
+			},
+			"response": []
+		}
+	]
+}

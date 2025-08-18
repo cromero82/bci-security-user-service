@@ -47,7 +47,7 @@ class UserControllerTest {
         UserDTO request = UserDTO.builder()
                 .name("John Doe")
                 .email("john.doe@example.com")
-                .password("Test1234")
+                .password("a2asfGfdfdf4")
                 .phones(Arrays.asList(
                         PhoneUserDTO.builder().number(123456789L).citycode(1).contrycode("+1").build()
                 ))

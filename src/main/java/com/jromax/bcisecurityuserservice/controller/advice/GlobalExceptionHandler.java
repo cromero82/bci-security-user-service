@@ -24,13 +24,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDTO> handleValidationExceptions(MethodArgumentNotValidException ex) {
         log.error("Validation error: {}", ex.getMessage());
-        
+
+        // Collect unique (field, message) pairs to avoid duplicate entries when multiple constraints fail on the same field
         List<ErrorDTO> errors = ex.getBindingResult()
                 .getAllErrors()
                 .stream()
                 .map(error -> {
                     String fieldName = error instanceof FieldError ? ((FieldError) error).getField() : error.getObjectName();
                     String errorMessage = error.getDefaultMessage();
+                    return fieldName + "|" + errorMessage;
+                })
+                .distinct()
+                .map(key -> {
+                    String[] parts = key.split("\\|", 2);
+                    String fieldName = parts[0];
+                    String errorMessage = parts.length > 1 ? parts[1] : "Invalid value";
                     log.debug("Validation error on field '{}': {}", fieldName, errorMessage);
                     return ErrorDTO.builder()
                             .timestamp(LocalDateTime.now())

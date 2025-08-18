@@ -1,13 +1,12 @@
 package com.jromax.bcisecurityuserservice.model.dto;
 
+import com.jromax.bcisecurityuserservice.validation.PropertyPattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -22,12 +21,13 @@ public class UserDTO {
     
     private String name;
     
-    @Email(message = "Email format is invalid")
-    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "Email format is invalid")
+    @PropertyPattern(property = "app.validation.email-regex", message = "", allowEmpty = false)
     private String email;
     
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[0-9].*[0-9])[a-z0-9A-Z]{8,12}$", 
-             message = "Password must have exactly one uppercase letter, exactly two digits, lowercase letters, and be 8-12 characters long")
+    @PropertyPattern(
+            property = "app.validation.password-regex",
+            message = "",
+            allowEmpty = false)
     private String password;
     
     @Valid
