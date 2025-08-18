@@ -1,0 +1,75 @@
+@startuml Sign Up Sequence Diagram
+title User Registration Endpoint
+
+actor Client
+participant "UserController" as Controller
+participant "UserService" as Service
+participant "UserServiceImpl" as ServiceImpl
+participant "UserRepository" as Repository
+participant "JwtUtil" as JwtUtil
+participant "PasswordEncoder" as PasswordEncoder
+database "H2 Database" as DB
+
+Client -> Controller: POST /api/sign-up with UserDTO
+activate Controller
+
+Controller -> Service: registerUser(userDTO)
+activate Service
+
+Service -> ServiceImpl: registerUser(userDTO)
+activate ServiceImpl
+
+ServiceImpl -> Repository: existsByEmail(email)
+activate Repository
+Repository --> ServiceImpl: boolean (exists or not)
+deactivate Repository
+
+alt Email already exists
+    ServiceImpl --> Service: throw EntityExistsException
+    Service --> Controller: throw EntityExistsException
+    Controller --> Client: Return 409 Conflict with error message
+else Email is unique
+    ServiceImpl -> ServiceImpl: Create User entity from DTO
+    
+    ServiceImpl -> PasswordEncoder: encode(password)
+    activate PasswordEncoder
+    PasswordEncoder --> ServiceImpl: encodedPassword
+    deactivate PasswordEncoder
+    
+    ServiceImpl -> ServiceImpl: Map phone DTOs to entities
+    
+    ServiceImpl -> Repository: save(user)
+    activate Repository
+    Repository -> DB: INSERT user
+    DB --> Repository: Saved user with ID
+    Repository --> ServiceImpl: Saved user
+    deactivate Repository
+    
+    ServiceImpl -> JwtUtil: generateToken(email, userId)
+    activate JwtUtil
+    JwtUtil --> ServiceImpl: JWT token
+    deactivate JwtUtil
+    
+    ServiceImpl -> ServiceImpl: Set token to user
+    
+    ServiceImpl -> Repository: save(user with token)
+    activate Repository
+    Repository -> DB: UPDATE user
+    DB --> Repository: Updated user
+    Repository --> ServiceImpl: Updated user
+    deactivate Repository
+    
+    ServiceImpl -> ServiceImpl: Map user entity to DTO
+    
+    ServiceImpl --> Service: Return UserDTO
+    deactivate ServiceImpl
+    
+    Service --> Controller: Return UserDTO
+    deactivate Service
+    
+    Controller --> Client: Return 201 Created with UserDTO
+end
+
+deactivate Controller
+
+@enduml

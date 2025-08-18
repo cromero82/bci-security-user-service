@@ -1,0 +1,59 @@
+@startuml Component Diagram
+title BCI Security User Service - Component Diagram
+
+package "API Layer" {
+  [HealthCheckController] as HC
+  [UserController] as UC
+  [GlobalExceptionHandler] as GEH
+}
+
+package "Service Layer" {
+  interface "UserService" as US_I
+  [UserServiceImpl] as US_Impl
+}
+
+package "Repository Layer" {
+  interface "UserRepository" as UR_I
+}
+
+package "Model Layer" {
+  package "Entities" {
+    [User] as UE
+    [PhoneUser] as PE
+  }
+  
+  package "DTOs" {
+    [UserDTO] as UDTO
+    [PhoneUserDTO] as PDTO
+    
+    package "Error DTOs" {
+      [ErrorDTO] as EDTO
+      [ErrorResponseDTO] as ERDTO
+    }
+  }
+}
+
+package "Utilities" {
+  [JwtUtil] as JWT
+  [SecurityConfig] as SC
+}
+
+database "H2 Database" as DB
+
+' Relationships
+HC -down-> GEH : uses
+UC -down-> GEH : uses
+UC -right-> US_I : uses
+US_I <|.. US_Impl : implements
+US_Impl -down-> UR_I : uses
+US_Impl -right-> JWT : uses
+US_Impl -down-> SC : uses for password encoding
+UR_I -down-> UE : manages
+UE "1" -right-> "many" PE : has
+US_Impl -up-> UDTO : transforms to/from
+US_Impl -up-> PDTO : transforms to/from
+GEH -right-> EDTO : creates
+GEH -right-> ERDTO : creates
+UR_I -down-> DB : persists data
+
+@enduml
