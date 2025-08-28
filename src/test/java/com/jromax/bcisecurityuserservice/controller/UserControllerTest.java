@@ -49,7 +49,7 @@ class UserControllerTest {
                 .email("john.doe@example.com")
                 .password("a2asfGfdfdf4")
                 .phones(Arrays.asList(
-                        PhoneUserDTO.builder().number(123456789L).citycode(1).contrycode("+1").build()
+                        PhoneUserDTO.builder().number(123456789L).citycode(1).countrycode("+1").build()
                 ))
                 .build();
 
@@ -63,7 +63,7 @@ class UserControllerTest {
                 .token("mock-jwt-token")
                 .isActive(true)
                 .phones(Arrays.asList(
-                        PhoneUserDTO.builder().number(123456789L).citycode(1).contrycode("+1").build()
+                        PhoneUserDTO.builder().number(123456789L).citycode(1).countrycode("+1").build()
                 ))
                 .build();
 
@@ -100,7 +100,7 @@ class UserControllerTest {
                 .token("refreshed-token")
                 .isActive(true)
                 .phones(List.of(
-                        PhoneUserDTO.builder().number(555123456L).citycode(3).contrycode("+44").build()
+                        PhoneUserDTO.builder().number(555123456L).citycode(3).countrycode("+44").build()
                 ))
                 .password("$2a$10$dummypasshash") // as per service behavior returning password on login
                 .build();
@@ -134,8 +134,8 @@ class UserControllerTest {
                 .email("john.doe@example.com")
                 .password("$2a$10$seedhash1")
                 .phones(Arrays.asList(
-                        PhoneUserDTO.builder().number(123456789L).citycode(1).contrycode("+1").build(),
-                        PhoneUserDTO.builder().number(987654321L).citycode(2).contrycode("+1").build()
+                        PhoneUserDTO.builder().number(123456789L).citycode(1).countrycode("+1").build(),
+                        PhoneUserDTO.builder().number(987654321L).citycode(2).countrycode("+1").build()
                 ))
                 .isActive(true)
                 .build();
@@ -146,7 +146,7 @@ class UserControllerTest {
                 .email("jane.smith@example.com")
                 .password("$2a$10$seedhash2")
                 .phones(List.of(
-                        PhoneUserDTO.builder().number(555123456L).citycode(3).contrycode("+44").build()
+                        PhoneUserDTO.builder().number(555123456L).citycode(3).countrycode("+44").build()
                 ))
                 .isActive(true)
                 .build();

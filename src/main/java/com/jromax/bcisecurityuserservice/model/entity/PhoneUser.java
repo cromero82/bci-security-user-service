@@ -32,7 +32,7 @@ public class PhoneUser {
     private Integer citycode;
 
     @Column(name = "country_code")
-    private String contrycode;
+    private String countrycode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

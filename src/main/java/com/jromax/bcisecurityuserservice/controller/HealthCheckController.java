@@ -18,18 +18,12 @@ public class HealthCheckController {
     @GetMapping
     public ResponseEntity<Map<String, Object>> healthCheck() {
         log.info("Health check requested");
-        try {
-            Map<String, Object> response = new HashMap<>();
-            response.put("status", "UP");
-            response.put("timestamp", LocalDateTime.now().toString());
-            response.put("service", "bci-security-user-service");
-            response.put("message", "Service is running correctly");
-            
-            log.info("Health check completed successfully");
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            log.error("Error during health check: {}", e.getMessage());
-            throw e;
-        }
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "UP");
+        response.put("timestamp", LocalDateTime.now().toString());
+        response.put("service", "bci-security-user-service");
+        response.put("message", "Service is running correctly");
+        log.info("Health check completed successfully");
+        return ResponseEntity.ok(response);
     }
 }

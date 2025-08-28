@@ -35,7 +35,7 @@ class UserControllerIntegrationTest {
                 "  \"name\": \"Test User\",\n" +
                 "  \"email\": \"invalid-email\",\n" +
                 "  \"password\": \"Test1234\",\n" +
-                "  \"phones\": [ { \"number\": 123456789, \"citycode\": 1, \"contrycode\": \"+1\" } ]\n" +
+                "  \"phones\": [ { \"number\": 123456789, \"citycode\": 1, \"countrycode\": \"+1\" } ]\n" +
                 "}";
 
         mockMvc.perform(post("/api/sign-up")
@@ -59,7 +59,7 @@ class UserControllerIntegrationTest {
                 "  \"name\": \"Test User\",\n" +
                 "  \"email\": \"test.user@example.com\",\n" +
                 "  \"password\": \"weakpassword\",\n" +
-                "  \"phones\": [ { \"number\": 123456789, \"citycode\": 1, \"contrycode\": \"+1\" } ]\n" +
+                "  \"phones\": [ { \"number\": 123456789, \"citycode\": 1, \"countrycode\": \"+1\" } ]\n" +
                 "}";
 
         mockMvc.perform(post("/api/sign-up")
@@ -84,7 +84,7 @@ class UserControllerIntegrationTest {
                 "  \"name\": \"Test User\",\n" +
                 "  \"email\": \"test.user.2@example.com\",\n" +
                 "  \"password\": \"TEst1234\",\n" +
-                "  \"phones\": [ { \"number\": 123456789, \"citycode\": 1, \"contrycode\": \"+1\" } ]\n" +
+                "  \"phones\": [ { \"number\": 123456789, \"citycode\": 1, \"countrycode\": \"+1\" } ]\n" +
                 "}";
 
         mockMvc.perform(post("/api/sign-up")
@@ -106,7 +106,7 @@ class UserControllerIntegrationTest {
                 "  \"name\": \"John Doe\",\n" +
                 "  \"email\": \"john.doe@example.com\",\n" +
                 "  \"password\": \"a2asfGfdfdf4\",\n" +
-                "  \"phones\": [ { \"number\": 123456789, \"citycode\": 1, \"contrycode\": \"+1\" } ]\n" +
+                "  \"phones\": [ { \"number\": 123456789, \"citycode\": 1, \"countrycode\": \"+1\" } ]\n" +
                 "}";
 
         mockMvc.perform(post("/api/sign-up")

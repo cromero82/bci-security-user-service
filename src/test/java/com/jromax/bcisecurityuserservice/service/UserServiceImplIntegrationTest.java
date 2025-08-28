@@ -63,7 +63,7 @@ class UserServiceImplIntegrationTest {
                         PhoneUserDTO.builder()
                                 .number(123456789L)
                                 .citycode(1)
-                                .contrycode("+1")
+                                .countrycode("+1")
                                 .build()
                 ))
                 .build();

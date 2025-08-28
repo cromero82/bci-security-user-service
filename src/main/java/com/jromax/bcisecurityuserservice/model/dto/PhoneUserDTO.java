@@ -23,5 +23,5 @@ public class PhoneUserDTO {
     private Integer citycode;
     
     @NotNull(message = "Country code is required")
-    private String contrycode;
+    private String countrycode;
 }

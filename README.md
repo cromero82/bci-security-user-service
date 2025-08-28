@@ -57,7 +57,7 @@ Base path: `/api`
       "name": "Carlos ROMERO",
       "email": "carlos.romero@example.com",
       "password": "a2asfGfdfdf4",
-      "phones": [ { "number": 123456789, "citycode": 1, "contrycode": "+1" } ]
+      "phones": [ { "number": 123456789, "citycode": 1, "countrycode": "+1" } ]
     }
   - Success: 201 Created with user fields including id, created, lastLogin, token, isActive, name, email, password (as per requirement), phones.
   - Errors (shape):
@@ -101,7 +101,7 @@ Sign up (valid):
 - curl --request POST \
   --url http://localhost:8081/api/sign-up \
   --header 'Content-Type: application/json' \
-  --data '{"name":"Test User","email":"test.user@example.com","password":"a2asfGfdfdf4","phones":[{"number":123456789,"citycode":1,"contrycode":"+1"}]}'
+  --data '{"name":"Test User","email":"test.user@example.com","password":"a2asfGfdfdf4","phones":[{"number":123456789,"citycode":1,"countrycode":"+1"}]}'
 
 Login:
 - curl --request POST \

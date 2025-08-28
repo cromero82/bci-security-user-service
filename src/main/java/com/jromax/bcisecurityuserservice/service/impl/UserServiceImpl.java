@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
         return PhoneUser.builder()
                 .number(phoneUserDTO.getNumber())
                 .citycode(phoneUserDTO.getCitycode())
-                .contrycode(phoneUserDTO.getContrycode())
+                .countrycode(phoneUserDTO.getCountrycode())
                 .build();
     }
 
@@ -115,7 +115,7 @@ public class UserServiceImpl implements UserService {
                 .id(phone.getId())
                 .number(phone.getNumber())
                 .citycode(phone.getCitycode())
-                .contrycode(phone.getContrycode())
+                .countrycode(phone.getCountrycode())
                 .build();
     }
     
